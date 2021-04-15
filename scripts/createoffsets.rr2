@@ -1,0 +1,2 @@
+is | grep triggerPull | awk '$6 > 15 {print $2}' > offsets.txt
+pd 200 @@.offsets.txt | grep subs | cut -d 'x' -f2,3 | awk '$4 == "r3," {printf("0x%s\n", $1)}' > byteOffset.txt

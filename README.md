@@ -1,4 +1,6 @@
 # Introduction
+![Mini Militia](assets/logo.png)
+
 Mini Militia was a very popular multiplayer game until PubG and their own commercialization killed it, It's one of the first mobile games I liked. 2 years ago, I did some modifications in the game binary and unlocked some hacks. Now that I have more free time, I wanted to finish it with as many tricks as I could find. I am going to use version 4.0.42, since newer versions have removed the LAN mode(Seriously? It was the best feature). So since it's an old version these mods will only work on LAN.
 
 # Method
@@ -24,10 +26,10 @@ I: Copying original files...
 This will create a `unpack/` directory, with the apk file extracted. Here you can find all the code, resources and configuration files for the game.
 
 ## Important Files and Directories
-Here are some important files and directories that you can poke around and find
+Here are some important files and directories that you can poke around and find assets and configs to change.
 
 #### AndroidManifest.xml
-The android manifest file having app permissions etc.
+The android manifest file having app permissions, activities etc.
 
 ####  smali/
 The smali machine code for Compiled Android Java Classes.
@@ -53,6 +55,7 @@ The Shared Object file that contains all the machine code for Compiled C++ Class
 
 Getting more information about the binary:
 ```bash
+$ cd unpack/lib/armeabi-v7a
 $ file libcocos2dcpp.so
 libcocos2dcpp.so: ELF 32-bit LSB shared object, ARM, EABI5 version 1 (SYSV), dynamically linked, interpreter /system/bin/linker, stripped
 ```
@@ -127,6 +130,7 @@ This will make the method always return true. And we will be able to unlock the 
 Now that we have modified our binary file and other config files and assets, we need to convert it back into the apk so we can enjoy our mods.
 For this just use apk tool:
 ```bash
+$ cd ../../../
 $ java -jar apktool.jar b unpack
 I: Using Apktool 2.5.0
 I: Checking whether sources has changed...
@@ -144,6 +148,7 @@ This will create the new modified apk file in `unpack/dist` directory. Now we ju
 
 First we will create a key to sign our apk, this is a one time process:
 ```bash
+$ cd unpack/dist
 $ keytool -genkey -v -keystore mini.keystore -alias minikey -keyalg RSA -keysize 2048 -validity 10000
 Enter keystore password:  
 Re-enter new password: 
@@ -215,6 +220,8 @@ Change the method `WeaponFactory::createRandomStartWeapon()` to always pass a ha
 |2|Desert Eagle|
 
 # Other Interesting Methods
+You can also check other interesting methods to explore and do share other hacks that you were able to find.
+
 * Weapon::getDamage()
 * Weapon::getMeleeDamage()
 * Weapon::isReloading()

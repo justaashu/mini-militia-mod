@@ -195,6 +195,27 @@ Below are all the hacks I could figure out and the method used.
 ### Unlimited Ammo
 Find and change instruction `subs r3, 1` to `subs r3, 0` in triggerPull method for all weapons `*::triggerPull()`. This removes the code to subtract 1 bullet at trigger pull of each weapon.
 
+### Unlimited Health
+The method `SoldierHostController::getHP()` is responsible for setting health of a player. Towards the end of the method, we can see that method is setting r0 register with r3's value `mov r0, r3` at address `0x004d8ff6`. Since r0 is generally used as a return value, we can change this to any value we want. At first I changed it to `mov r0, 1`, this gave me infinite health as health value was always inferred as 1 by the game. But on UI this 1 value only filled a very small amount of the health bar, which made me realize that it is probably a percent value. So let's set it to 100 `movs r0, 0x64`. 
+
+#### Before
+```bash
+[0x004d8ff6]> pd 10
+            0x004d8ff6      1846           mov r0, r3
+            0x004d8ff8      04b0           add sp, 0x10
+            0x004d8ffa      10bd           pop {r4, pc}
+            ;-- SoldierHostController::setHP(int):
+```
+
+#### After
+```bash
+[0x004d8ff6]> pd 10
+            0x004d8ff6      6420           movs r0, 0x64
+            0x004d8ff8      04b0           add sp, 0x10
+            0x004d8ffa      10bd           pop {r4, pc}
+            ;-- SoldierHostController::setHP(int):
+```
+
 ### Pro Pack
 Change method `InAppPurchaseBridge::isProductPurchased(std::string)` to always return true by modifying instruction to `movs r0, 1` at address `0x0054e96a`. This sets the propack as purchased.
 
@@ -219,6 +240,9 @@ Change the method `WeaponFactory::createRandomStartWeapon()` to always pass a ha
 |1|Uzi|
 |2|Desert Eagle|
 
+### Purchase all items
+Change the method `ItemPurchase::isItemPurchased(std::string)` to always return true by changing the instruction at `0x003d053e` from `movs r3, 0` to `movs r3, 1`. This will set all the items in the shop as purchased.
+
 # Other Interesting Methods
 You can also check other interesting methods to explore and do share other hacks that you were able to find.
 
@@ -228,13 +252,14 @@ You can also check other interesting methods to explore and do share other hacks
 * Weapon::getZoomScale()
 * Weapon::changeZoomLevel()
 * Weapon::setAccuracyMod(float)
+* Weapon::setZoomMod(float)
 * WeaponFactory::isDualWeapon(ItemType)
 * WeaponFactory::createRandomSecondaryWeapon()
 * WeaponFactory::createRandomPrimaryWeapon()
-* SoldierHostController::getHP()
 * SoldierHostController::setHP(int)
 * SoldierHostController::setMaxHP(int)
 * SoldierManager::getRespawnTime()
 * SoldierHostController::getBackupStarterWeapon()
 * SoldierHostController::getPrimaryStarterWeapon()
 * InAppPurchaseBridge::getProductPrice(std::string)
+* WeaponFactory::sharedWeaponFactory()
